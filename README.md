@@ -10,3 +10,6 @@ If an Acknolege is received by the Slave device then it will send an register an
 If a Not Acknolege is received by the Slave device then it will clean the register and the bus protocol.
 
 This was tested with an Accelerometer AXLD345 and a Preassure Sensor BMP180
+
+
+It is recommended to test each device one at a time
