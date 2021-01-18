@@ -8,9 +8,7 @@
   */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
-uint8_t  Meassured = 0;
-uint16_t Received_Data[3] = {0};
-
+uint8_t  Address = 0;
 
 /* Main ------------------------------------------------------------------*/
 int main ()
@@ -26,8 +24,7 @@ int main ()
 
     GPIOB->MODER &= ~(GPIO_MODER_MODER9_0);
     GPIOB->MODER |=  (GPIO_MODER_MODER9_1);
-
-//    GPIOB->AFR[1] |= 1<<GPIO_AFRH_AFSEL8_Pos | 1<<GPIO_AFRH_AFSEL9_Pos;
+	
     GPIOB->AFR[1] = 0x00000011;
 
 /* OTYPER: Open Drain */
@@ -45,167 +42,43 @@ int main ()
 /* Enable I2C */
     I2C1->TIMINGR = (uint32_t) 0x0010020A;
 
-#if 0
-	for(uint8_t i = 0x57; i < 128; i++)
-	{
-	    I2C1->CR1 |= I2C_CR1_PE;
-	/* Set Slave Address */
-		I2C1->CR2 |= (i << 1);
-
-	/* Set Write on RD_WRN */
-		I2C1->CR2 &= ~(I2C_CR2_RD_WRN);
-
-	/* Set the   of byte to transmit */
-		I2C1->CR2 |= (1 << 16);
-
-	/* Start condition */
-		I2C1->CR2 |= I2C_CR2_START;
-		while(I2C1->CR2 & I2C_CR2_START)
-		{
-			;
-		}
-
-		if ((I2C1->ISR & I2C_ISR_NACKF) == 0)
-		{
-			/* Write Register Adress to Transmit Data Register */
-			I2C1->TXDR = 0x2;
-			while(!(I2C1->ISR & I2C_ISR_TXE))
-			{
-				;
-			}
-			/* Stop Condition */
-			I2C1->CR2 |= I2C_CR2_STOP;
-			while(I2C1->CR2 & I2C_CR2_STOP)
-			{
-				;
-			}
-			Meassured = i;
-		}
-		else
-		{
-			I2C1->CR2 &= ~0xFF;
-		    I2C1->CR1 &= ~I2C_CR1_PE;
-		}
-	}
-	while(1)
-	{}
-#endif
-#if 1
-    I2C1->CR1 |= I2C_CR1_PE;
-
-/* Set Slave Address */
-    I2C1->CR2 |= (0x53 << 1);
-
-/* Start condition */
-/* Set Write on RD_WRN */
-    I2C1->CR2 &= ~(I2C_CR2_RD_WRN);
-/* Set the   of byte to transmit */
-    I2C1->CR2 |= (2 << 16);
-    I2C1->CR2 |= I2C_CR2_START;
-    while(I2C1->CR2 & I2C_CR2_START)
-    {;}
-/* Write Register Adress to Transmit Data Register */
-    I2C1->TXDR = 0x2D;
-    while(!(I2C1->ISR & I2C_ISR_TXE))
-    {;}
-    I2C1->TXDR = 0b00001000;
-    while(!(I2C1->ISR & I2C_ISR_TXE))
-    {;}
-/* Stop Condition */
-    I2C1->CR2 |= I2C_CR2_STOP;
-    while(I2C1->CR2 & I2C_CR2_STOP)
-    {;}
-
-/* Start condition */
-/* Set Write on RD_WRN */
-    I2C1->CR2 &= ~(I2C_CR2_RD_WRN);
-/* Set the   of byte to transmit */
-    I2C1->CR2 |= (1 << 16);
-    I2C1->CR2 |= I2C_CR2_START;
-    while(I2C1->CR2 & I2C_CR2_START)
-    {;}
-/* Write Register Adress to Transmit Data Register */
-    I2C1->TXDR = 0x2D;
-    while(!(I2C1->ISR & I2C_ISR_TXE))
-    {;}
-/* Stop Condition */
-    I2C1->CR2 |= I2C_CR2_STOP;
-    while(I2C1->CR2 & I2C_CR2_STOP)
-    {;}
-/* Set Read on RD_WRN */
-    I2C1->CR2 |= (I2C_CR2_RD_WRN);
-/* Set the Number of byte to receive */
-    I2C1->CR2 |= (1<<16);
-/* Start condition */
-    I2C1->CR2 |= I2C_CR2_START;
-    while(I2C1->CR2 & I2C_CR2_START)
-    {;}
-/* Read Register Adress */
-    while (!(I2C1->ISR & I2C_ISR_RXNE))
-    {;}
-    Meassured = I2C1->RXDR;
-/* Stop Condition */
-    I2C1->CR2 |= I2C_CR2_STOP;
-    while(I2C1->CR2 & I2C_CR2_STOP)
-    {;}
-
-
-    while (1)
+    for(uint8_t i = 0x57; i < 128; i++)
     {
-    /* Set Write on RD_WRN */
-        I2C1->CR2 &= ~(I2C_CR2_RD_WRN);
-    /* Set the   of byte to transmit */
-        I2C1->CR2 |= (1 << 16);
-    /* Start condition */
-        I2C1->CR2 |= I2C_CR2_START;
-        while(I2C1->CR2 & I2C_CR2_START)
-        {;}
-    /* Write Register Adress to Transmit Data Register */
-        I2C1->TXDR = 0x32;
-        while(!(I2C1->ISR & I2C_ISR_TXE))
-        {;}
-    /* Stop Condition */
-        I2C1->CR2 |= I2C_CR2_STOP;
-        while(I2C1->CR2 & I2C_CR2_STOP)
-        {;}
-    /* Set Read on RD_WRN */
-        I2C1->CR2 |= (I2C_CR2_RD_WRN);
-    /* Set the Number of byte to receive */
-        I2C1->CR2 |= (6<<16);
-    /* Start condition */
-        I2C1->CR2 |= I2C_CR2_START;
-        while(I2C1->CR2 & I2C_CR2_START)
-        {;}
-    /* Read Register Adress */
-        while (!(I2C1->ISR & I2C_ISR_RXNE))
-        {;}
-        Received_Data[0]  = I2C1->RXDR;
-        while (!(I2C1->ISR & I2C_ISR_RXNE))
-        {;}
-        Received_Data[0] |= I2C1->RXDR << 8;
-        while (!(I2C1->ISR & I2C_ISR_RXNE))
-        {;}
-        Received_Data[1] = I2C1->RXDR;
-        while (!(I2C1->ISR & I2C_ISR_RXNE))
-        {;}
-        Received_Data[1] |= I2C1->RXDR << 8;
-        while (!(I2C1->ISR & I2C_ISR_RXNE))
-        {;}
-        Received_Data[2] = I2C1->RXDR;
-        while (!(I2C1->ISR & I2C_ISR_RXNE))
-        {;}
-        Received_Data[2] |= I2C1->RXDR << 8;
-    /* Stop Condition */
-        I2C1->CR2 |= I2C_CR2_STOP;
-        while(I2C1->CR2 & I2C_CR2_STOP)
-        {;}
+	I2C1->CR1 |= I2C_CR1_PE;
+/* Set Slave Address */
+	I2C1->CR2 |= (i << 1);
 
-        Received_Data[0] = Received_Data[0]/256;
-        Received_Data[1] = Received_Data[1]/256;
-        Received_Data[2] = Received_Data[2]/256;
+/* Set Write on RD_WRN */
+	I2C1->CR2 &= ~(I2C_CR2_RD_WRN);
 
-    }
-#endif
+/* Set the   of byte to transmit */
+	I2C1->CR2 |= (1 << 16);
+
+/* Start condition */
+	I2C1->CR2 |= I2C_CR2_START;
+	while(I2C1->CR2 & I2C_CR2_START)
+	{;}
+
+	if ((I2C1->ISR & I2C_ISR_NACKF) == 0)
+	{
+	/* Write Register Adress to Transmit Data Register */
+		I2C1->TXDR = 0x2;
+		while(!(I2C1->ISR & I2C_ISR_TXE))
+		{;}
+	/* Stop Condition */
+		I2C1->CR2 |= I2C_CR2_STOP;
+		while(I2C1->CR2 & I2C_CR2_STOP)
+		{;}
+		Address = i;
+	}
+	else
+	{
+		I2C1->CR2 &= ~0xFF;
+		I2C1->CR1 &= ~I2C_CR1_PE;
+	}
+   }
+   while(1)
+   {}
 }
 
 #ifdef  USE_FULL_ASSERT
