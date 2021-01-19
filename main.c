@@ -60,7 +60,7 @@ int main ()
 	I2C1->CR2 |= I2C_CR2_START;
 	while(I2C1->CR2 & I2C_CR2_START)
 	{;}
-/* Check if NACK Flag was set *?
+/* Check if NACK Flag was set */
 	if ((I2C1->ISR & I2C_ISR_NACKF) == 0)
 	{
 	/* Write Register Adress to Transmit Data Register */
