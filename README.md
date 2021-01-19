@@ -6,8 +6,8 @@ I2C port information
   SCK -----> PB8
   
 The code scan from index 0 to index 127 by sending start operation in the CR1 register with the specified Address.
-If an Acknolege is received by the Slave device then it will send a dummy address of register to the slave and finish the I2C protocol
-If a Not Acknolege is received by the Slave device then it will clean the Slave Address Register and finish the I2C protocol.
+If an Acknoledge is received by the Slave device then it will send a dummy address of register to the slave and finish the I2C protocol
+If a Not Acknoledge is received by the Slave device then it will clean the Slave Address Register and finish the I2C protocol.
 
 This was tested with an Accelerometer AXLD345 and a Preassure Sensor BMP180
 
