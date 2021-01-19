@@ -25,6 +25,7 @@ int main ()
     GPIOB->MODER &= ~(GPIO_MODER_MODER9_0);
     GPIOB->MODER |=  (GPIO_MODER_MODER9_1);
 	
+/* Set Alternative function register to I2C1 for PB8 and PB9 */
     GPIOB->AFR[1] = 0x00000011;
 
 /* OTYPER: Open Drain */
@@ -35,15 +36,16 @@ int main ()
     GPIOB->OSPEEDR &= ~(GPIO_OSPEEDER_OSPEEDR8_0);
     GPIOB->OSPEEDR &= ~(GPIO_OSPEEDER_OSPEEDR9_0);
 
-/* PUPD: Low */
+/* PUPD: */
     GPIOB->PUPDR &= ~(GPIO_PUPDR_PUPDR8);
     GPIOB->PUPDR &= ~(GPIO_PUPDR_PUPDR8);
 
-/* Enable I2C */
+/* Set time to High Speed (400 kHz) this was calculated using the I2C_Timing_Configuration_V1.0.1.xlsm (Link on README file) */
     I2C1->TIMINGR = (uint32_t) 0x0010020A;
 
     for(uint8_t i = 0x57; i < 128; i++)
     {
+/* Enable the I2C */
 	I2C1->CR1 |= I2C_CR1_PE;
 /* Set Slave Address */
 	I2C1->CR2 |= (i << 1);
@@ -51,18 +53,18 @@ int main ()
 /* Set Write on RD_WRN */
 	I2C1->CR2 &= ~(I2C_CR2_RD_WRN);
 
-/* Set the   of byte to transmit */
+/* Set the number of bytes to transmit  (1)*/
 	I2C1->CR2 |= (1 << 16);
 
 /* Start condition */
 	I2C1->CR2 |= I2C_CR2_START;
 	while(I2C1->CR2 & I2C_CR2_START)
 	{;}
-
+/* Check if NACK Flag was set *?
 	if ((I2C1->ISR & I2C_ISR_NACKF) == 0)
 	{
 	/* Write Register Adress to Transmit Data Register */
-		I2C1->TXDR = 0x2;
+		I2C1->TXDR = 0x0;
 		while(!(I2C1->ISR & I2C_ISR_TXE))
 		{;}
 	/* Stop Condition */
@@ -73,6 +75,7 @@ int main ()
 	}
 	else
 	{
+	/* Reset the Address Register and disable the I2C */
 		I2C1->CR2 &= ~0xFF;
 		I2C1->CR1 &= ~I2C_CR1_PE;
 	}
@@ -81,21 +84,4 @@ int main ()
    {}
 }
 
-#ifdef  USE_FULL_ASSERT
-/**
-  * @brief  Reports the name of the source file and the source line number
-  *         where the assert_param error has occurred.
-  * @param  file: pointer to the source file name
-  * @param  line: assert_param error line source number
-  * @retval None
-  */
-void assert_failed(uint8_t *file, uint32_t line)
-{
-  /* USER CODE BEGIN 6 */
-  /* User can add his own implementation to report the file name and line number,
-     ex: printf("Wrong parameters value: file %s on line %d\r\n", file, line) */
-  /* USER CODE END 6 */
-}
-#endif /* USE_FULL_ASSERT */
-
-/************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/
+/*****END OF FILE****/
